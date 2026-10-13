@@ -40,7 +40,7 @@ siege/
 │   ├── spec.md
 │   ├── architecture.md
 │   ├── plan.md                  handoff: план с чекбоксами
-│   ├── memory.md                handoff: журнал сессий
+│   ├── progress.md              handoff: журнал прогресса
 │   └── about.md                 отчёт о настройке среды агента
 ├── .claude/
 │   ├── settings.json            права, режим по умолчанию, hooks
