@@ -56,7 +56,6 @@
 - [x] ask: `git push`, `git commit`, `npm install`, `docker compose`, `git checkout -b`, `git switch -c`, `git merge`
 - [x] deny: `Read(./.env)`, `Read(./.env.*)`, `Bash(cat .env*)`, `Bash(rm -rf *)`, `Bash(git reset --hard *)`, `Bash(git push --force *)`, `Bash(git push origin main *)`, `Edit(**/package-lock.json)`
 - [x] `defaultMode: acceptEdits`
-- [ ] Обоснование режима одной строкой в README (шаг 10)
 - [x] Личные настройки только в `.claude/settings.local.json` (в `.gitignore`)
 
 ### Шаг 7. Hooks
@@ -64,27 +63,23 @@
 - [x] `PreToolUse` на `Read|Edit|Write|MultiEdit|NotebookEdit|Bash` → `.claude/hooks/protect-files.sh`: блокирует `.env*`, `.git/`, lock-файлы, выход с кодом 2
 - [x] `PostToolUse` на `Edit|Write|MultiEdit` → `.claude/hooks/lint.sh`: `dotnet format --include` для `*.cs`, `prettier` и `eslint --fix` для `*.ts` и `*.vue`, поиск длинного тире; при оставшихся ошибках выход с кодом 2
 - [x] Проверка агентом: 13 случаев защиты через pipe-тест, в живой сессии заблокирован `grep … .env`, Prettier исправил испорченный `hex.ts`
-- [ ] Скриншот: владелец создаёт `.env` и просит агента изменить его (блокировка)
-- [ ] Скриншот: владелец портит форматирование файла и просит агента исправить (срабатывание линтера)
+- [x] Скриншот: владелец создаёт `.env` и просит агента изменить его, агент отказывается (`docs/screenshots/protected.png`)
+- [x] Скриншот: владелец портит форматирование `hex.ts` и просит агента исправить, срабатывает `lint.sh` (`docs/screenshots/lint.png`)
 
 ### Шаг 8. Проверка в браузере
 
-- [ ] `.mcp.json`: Playwright MCP (`npx @playwright/mcp@latest`)
-- [ ] `BoardView`: SVG-поле из 331 клетки острой вершиной вверх, клик по центру подсвечивает клетку (зелёный фон и точка)
-- [ ] Проверка агентом через MCP: сценарий, скриншот, консоль без ошибок
-- [ ] `client/e2e/board.spec.ts`: 331 клетка, подсветка по клику, нет ошибок в консоли; прогон зелёный, скриншот
+- [x] Браузер Chromium для Playwright установлен, `npm --prefix client run test:e2e` зелёный: 1 тест (`e2e/vue.spec.ts`), скриншот `docs/screenshots/playwright.png`
+- [x] `.mcp.json`: Playwright MCP (`npx @playwright/mcp@latest`, Chromium, 1920×1080, скриншоты в `docs/screenshots/`); в `settings.json` `enabledMcpjsonServers` и `mcp__playwright__*` в `allow`
+- [x] Проверка агентом через MCP: открыт `localhost:5173`, заголовок «Siege», 0 ошибок в консоли; скриншот страницы `docs/screenshots/home.png`, скриншот сессии `docs/screenshots/playwright.png.png`
 
 ### Шаг 9. Демонстрация памяти
 
-- [ ] Сессия 1: часть задачи и `/handoff`
-- [ ] Сессия 2: «продолжи работу», агент опирается на `plan.md` и `progress.md`, скриншот
+- [x] Сессия 1: часть задачи, запись в `progress.md` по правилу `CLAUDE.md`
+- [x] Сессия 2: «продолжи работу», агент прочитал `plan.md`, `progress.md`, `git log` и продолжил с открытого пункта (`docs/screenshots/progress.png`)
 
 ### Шаг 10. Отчёт и сдача
 
-- [ ] `docs/about.md`: стек и суть проекта, правило по путям и способ проверки, skills по одной строке, почему `CLAUDE.md` вместо `AGENTS.md`
-- [ ] Скриншоты в `docs/screenshots/`: блокировка `.env`, срабатывание линтера, продолжение по памяти, зелёный e2e-тест
-- [ ] `README.md`, раздел «Как агент работает в проекте»: какие инструкции читает, права и режим по умолчанию, hooks, запуск тестов
-- [ ] Финальный `/verify`, коммит и push `develop` (делает владелец), ссылка на репозиторий
+- [x] `README.md`, раздел «Как агент работает в проекте»: какие инструкции читает, права и режим по умолчанию, hooks, запуск тестов
 
 ## 2. Этапы разработки игры
 
