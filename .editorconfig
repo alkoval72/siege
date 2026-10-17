@@ -1,0 +1,51 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+# Клиент: TS, Vue, стили
+[*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,vue,css,scss}]
+max_line_length = 100
+
+# Сервер: C#
+[*.cs]
+indent_size = 4
+
+# Порядок using: System первым, без пустых строк между группами
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+# Пространства имён — file-scoped
+csharp_style_namespace_declarations = file_scoped:warning
+
+# var там, где тип очевиден
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+
+# Фигурные скобки всегда и с новой строки
+csharp_prefer_braces = true:warning
+csharp_new_line_before_open_brace = all
+
+# Именование: приватные поля _camelCase
+dotnet_naming_rule.private_fields_underscore.symbols = private_fields
+dotnet_naming_rule.private_fields_underscore.style = underscore_camel
+dotnet_naming_rule.private_fields_underscore.severity = warning
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_style.underscore_camel.required_prefix = _
+dotnet_naming_style.underscore_camel.capitalization = camel_case
+
+[*.{csproj,props,targets,sln}]
+indent_size = 2
+
+# Тесты: имена методов в формате Метод_Условие_Результат, подчёркивания допустимы
+[server/*.Tests/**.cs]
+dotnet_diagnostic.CA1707.severity = none

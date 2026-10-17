@@ -22,10 +22,9 @@ Siege это браузерная сетевая стратегия для дв�
 |---|---|
 | Восстановить пакеты | `dotnet restore server/Siege.sln` |
 | Сборка | `dotnet build server/Siege.sln` |
-| Запуск (http://localhost:5000) | `dotnet run --project server/Siege.Server` |
 | Все тесты | `dotnet test server/Siege.sln` |
 | Один класс тестов | `dotnet test server/Siege.sln --filter "FullyQualifiedName~Siege.Engine.Tests.HexTests"` |
-| Один тест | `dotnet test server/Siege.sln --filter "FullyQualifiedName=Siege.Engine.Tests.HexTests.Distance_FromCenter_IsZero"` |
+| Один тест | `dotnet test server/Siege.sln --filter "FullyQualifiedName=Siege.Engine.Tests.HexTests.DistanceFromCenter_Center_IsZero"` |
 | Форматирование | `dotnet format server/Siege.sln` |
 | Проверка форматирования | `dotnet format server/Siege.sln --verify-no-changes` |
 
@@ -34,18 +33,18 @@ Siege это браузерная сетевая стратегия для дв�
 | Действие | Команда |
 |---|---|
 | Установка | `npm --prefix client ci` |
-| Dev-сервер (http://localhost:5173, прокси `/api`, `/hubs` → :5000) | `npm --prefix client run dev` |
+| Dev-сервер (http://localhost:5173) | `npm --prefix client run dev` |
 | Сборка | `npm --prefix client run build` |
 | Линтер (oxlint + eslint, с автоисправлением) | `npm --prefix client run lint` |
 | Форматирование / проверка | `npm --prefix client run format` / `npm --prefix client run format:check` |
 | Проверка типов | `npm --prefix client run type-check` |
 | Unit-тесты (Vitest) | `npm --prefix client run test:unit` |
-| Один файл / один тест | `cd client && npx vitest run src/game/__tests__/hex.spec.ts -t "соседи"` |
+| Один файл / один тест | `cd client && npx vitest run src/__tests__/App.spec.ts -t "название"` |
 | E2E (Playwright, сам поднимает dev-сервер) | `npm --prefix client run test:e2e` |
-| Один e2e-тест | `cd client && npx playwright test e2e/board.spec.ts` |
+| Один e2e-тест | `cd client && npx playwright test e2e/vue.spec.ts` |
 | Браузер для e2e (один раз) | `cd client && npx playwright install chromium` |
 
-Долгоживущие процессы (`dev`, `dotnet run`, `test:unit:watch`) запускай только в фоне. На переднем плане они блокируют сессию.
+Долгоживущие процессы (`dev`, `test:unit:watch`) запускай только в фоне. На переднем плане они блокируют сессию.
 
 ## Проверка результата
 
@@ -56,7 +55,7 @@ Siege это браузерная сетевая стратегия для дв�
   - `client/**` → `lint`, `type-check`, `test:unit`;
   - видимые изменения интерфейса → дополнительно `test:e2e` и/или проверка в браузере через Playwright MCP (сценарий, скриншот, консоль без ошибок).
 - Задача не выполнена, пока проверки не зелёные. Если довести их до зелёного не удалось, сообщи об этом и приложи вывод ошибки.
-- Любое изменение правил игры в `Siege.Engine` сопровождается тестом. Тест на правило агент пишет сам, без отдельной просьбы.
+- Любое изменение правил игры в `Siege.Engine` сопровождается тестом. Тест на правило агент пишет сам, без отдельной просьбы (skill `engine-test`).
 - Для остальных частей новые тесты пишутся только по запросу.
 
 ## Конвенции
@@ -64,27 +63,21 @@ Siege это браузерная сетевая стратегия для дв�
 **Общие:**
 - Комментарии, XML-doc, сообщения коммитов и тексты в документации пишутся на русском. Идентификаторы в коде пишутся на английском.
 - В комментариях к коду и сообщениях коммитов не используй длинное тире (U+2014). Оформление `.md`-файлов описано в `.claude/rules/markdown.md`.
-- Движок называет фишки по поведению: `Sovereign`, `Climber`, `Jumper`, `Scout`, `Runner`. Тематические названия (король, рыцарь и т. д.) живут только в `client/src/themes/`.
+- Правила для отдельных частей кода лежат в `.claude/rules/` и подгружаются по путям: `engine.md` (движок), `client.md` (клиент), `markdown.md` (документация).
 - Правило игры меняется вместе со `spec.md`: каждое отклонение от базовых правил фиксируется там же.
 
 **C# (`server/`):**
 - Пространства имён `Siege.<Проект>[.<Папка>]`, file-scoped. Один публичный тип на файл, имя файла совпадает с именем типа.
-- `Siege.Engine` не зависит ни от каких пакетов и проектов: в нём нет ASP.NET, EF, Serilog и ввода-вывода.
-- Состояние движка неизменяемо: `record` / `readonly record struct`, коллекции `IReadOnly*` или `System.Collections.Immutable`. `Apply` возвращает новое состояние.
 - Ход проверяется через членство в `GetLegalMoves`. Второй набор правил в сервере не пишем.
 - БД: работаем с `DbContext` напрямую из сервисов, слой Repository поверх EF Core не делаем. Строка подключения берётся из `ConnectionStrings__Default`.
 - Логирование через Serilog.
-- Тесты xUnit: файл `<Тип>Tests.cs`, метод `Метод_Условие_Результат`, табличные случаи через `[Theory]`.
+- Тесты xUnit: файл `<Тип>Tests.cs`, метод `Метод_Условие_Результат` (CA1707 для тестов отключён в `.editorconfig`).
 - `TreatWarningsAsErrors` включён: предупреждения исправляем, а не подавляем.
 
 **TypeScript / Vue (`client/`):**
-- Только `<script setup lang="ts">` и Composition API. Pinia-хранилища пишем в setup-стиле.
 - Компоненты `PascalCase.vue`, модули `camelCase.ts`, unit-тесты лежат в `__tests__/` рядом с модулем (`src/game/__tests__/hex.spec.ts`), e2e-тесты лежат в `client/e2e/*.spec.ts`.
-- Клиент правил не вычисляет: допустимые ходы берутся только из `legalMoves` сервера. Подсветка «недопустимо» нужна только для отображения.
-- DTO описываются вручную в `src/api/types.ts` и зеркалят JSON сервера (camelCase, дискриминатор хода `kind`).
-- Подсветка клеток всегда сочетает цвет и значок (точка или крестик).
 
-**Где что лежит:**
+**Где что лежит** (целевая структура из `architecture.md` §3, папки создаются по мере работы):
 ```
 server/Siege.Engine/        правила игры (чистая библиотека)
 server/Siege.Engine.Tests/  тесты движка
@@ -109,10 +102,11 @@ docs/                       spec, architecture, plan, progress
 - Не добавляй зависимости (`npm install <pkg>`, `dotnet add package`) без согласования.
 
 **Запрещено:**
-- Читать, выводить или изменять `.env` и `.env.*`. Исключение: `.env.example` без реальных значений. Секреты в код и в документацию не вставляй.
+- Читать, выводить или изменять `.env` и `.env.*`, включая шаблоны: их ведёт владелец, правило `deny` в `.claude/settings.json` это закрепляет. Секреты в код и в документацию не вставляй.
 - Вручную править `.git/` и lock-файлы (`package-lock.json`). Lock-файл меняется только через `npm install`.
 - Выполнять `rm -rf`, `git reset --hard`, `git clean -fd`, `git push --force`.
 - Ослаблять проверки ради зелёного результата: отключать правила линтера, `TreatWarningsAsErrors`, ставить `Skip` у тестов, удалять падающие тесты.
+- Обходить hooks из `.claude/hooks/`: `protect-files.sh` блокирует доступ к `.env*`, `.git/` и lock-файлам (в том числе Bash-команды, где упоминается `.env`), `lint.sh` форматирует файл после правки и возвращает ошибки линтера. Ошибку от hook исправляй в коде, а не в обход. Текст, где упоминается `.env`, правь через Edit, а не через Bash.
 - Копировать названия, тексты правил, графику и логотип оригинальной игры (`spec.md` §9).
 
 ## Память между сессиями

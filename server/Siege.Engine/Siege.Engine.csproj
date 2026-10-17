@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Движок правил: без зависимостей от сети, БД и интерфейса -->
+  <PropertyGroup>
+    <RootNamespace>Siege.Engine</RootNamespace>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siege.Engine", "Siege.Engine\Siege.Engine.csproj", "{338F7D07-49C1-4AB2-8241-6B1C8F747212}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siege.Engine.Tests", "Siege.Engine.Tests\Siege.Engine.Tests.csproj", "{9C46CB95-C391-43CC-A3D2-433D475403A6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{338F7D07-49C1-4AB2-8241-6B1C8F747212}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{338F7D07-49C1-4AB2-8241-6B1C8F747212}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{338F7D07-49C1-4AB2-8241-6B1C8F747212}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{338F7D07-49C1-4AB2-8241-6B1C8F747212}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C46CB95-C391-43CC-A3D2-433D475403A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C46CB95-C391-43CC-A3D2-433D475403A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C46CB95-C391-43CC-A3D2-433D475403A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C46CB95-C391-43CC-A3D2-433D475403A6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

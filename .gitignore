@@ -55,3 +55,18 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Секреты: любые .env, кроме шаблона
+.env.*
+!.env.example
+
+# Node / клиент
+node_modules/
+client/dist/
+playwright-report/
+test-results/
+.eslintcache
+
+# Личные настройки агента (не в git)
+.claude/settings.local.json
+CLAUDE.local.md

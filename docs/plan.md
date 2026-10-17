@@ -1,6 +1,6 @@
 # План работ: Siege
 
-Обновлено: 2026-10-13.
+Обновлено: 2026-10-17.
 
 Это handoff-файл. Выполненное отмечается `[x]`, подробности решений и ловушек записываются в `docs/progress.md`. Вся работа ведётся в ветке `develop`.
 
@@ -15,20 +15,20 @@
 
 ### Шаг 1. Каркас проекта
 
-Готовый каркас лежит в `origin/develop` (старая ветка), его можно перенести через `git checkout origin/develop -- <пути>`.
+Каркас минимальный, только под критерии ДЗ. `Siege.Server`, Router, Pinia и прокси добавляются на этапах M4-M5.
 
-- [ ] `server/Siege.sln`: `Siege.Engine`, `Siege.Engine.Tests` (xUnit), `Siege.Server` (`GET /health` на порту 5000)
-- [ ] `server/Directory.Build.props` (`TreatWarningsAsErrors`, `EnforceCodeStyleInBuild`), `global.json`, корневой `.editorconfig`
-- [ ] `client/`: Vue 3 + TS + Vite + Pinia + Router, ESLint + Oxlint + Prettier, Vitest, Playwright (Chromium 1920×1080), прокси `/api` и `/hubs`
-- [ ] `.gitignore`: `node_modules`, артефакты Playwright, `.env.*` кроме `.env.example`, `.claude/settings.local.json`, `CLAUDE.local.md`
-- [ ] Проверка: `dotnet build`, `dotnet test`, `dotnet format --verify-no-changes`, `npm run lint`, `npm run type-check`, `npm run test:unit`
+- [x] `server/Siege.sln`: `Siege.Engine` (тип `Hex`), `Siege.Engine.Tests` (xUnit, 7 тестов)
+- [x] `server/Directory.Build.props` (`TreatWarningsAsErrors`, `EnforceCodeStyleInBuild`), `global.json`, корневой `.editorconfig` (CA1707 отключён для тестов)
+- [x] `client/`: Vue 3 + TS + Vite, ESLint + Oxlint + Prettier, Vitest, Playwright (Chromium 1920×1080); `src/game/hex.ts`
+- [x] `.gitignore`: `node_modules`, артефакты Playwright, `.env.*`, `.claude/settings.local.json`, `CLAUDE.local.md`
+- [x] Проверка: `dotnet build`, `dotnet test`, `dotnet format --verify-no-changes`, `check:lint`, `type-check`, `test:unit` зелёные
 
 ### Шаг 2. Инструкции для агента
 
 - [x] `CLAUDE.md`: проект и стек, команды (в том числе один тест), проверка результата, конвенции, правила работы, память; не больше 200 строк
 - [x] В `CLAUDE.md` переопределено глобальное правило о тестах: агент сам запускает проверки и пишет тесты к движку
 - [x] `architecture.md`: доступ к данным без Repository, структура файлов агента в §3
-- [ ] Сверить команды в `CLAUDE.md` с каркасом после шага 1
+- [x] Сверить команды в `CLAUDE.md` с каркасом после шага 1; правила движка и клиента перенесены в `.claude/rules/`
 
 ### Шаг 3. Память между сессиями
 
@@ -39,30 +39,33 @@
 ### Шаг 4. Правила по путям
 
 - [x] `.claude/rules/markdown.md` (`paths: "**/*.md"`): оформление Markdown
-- [ ] `.claude/rules/engine.md` (`paths: server/Siege.Engine/**`, `server/Siege.Engine.Tests/**`): чистота движка, неизменяемость, тест на каждое правило, XML-doc
-- [ ] `.claude/rules/client.md` (`paths: client/src/**`): `<script setup lang="ts">`, клиент не вычисляет правила, подсветка «цвет + значок»
-- [ ] Код для проверки: `Hex` и `HexGrid` в движке, `client/src/game/hex.ts`
+- [x] `.claude/rules/engine.md` (`paths: server/Siege.Engine/**`, `server/Siege.Engine.Tests/**`): чистота движка, неизменяемость, тест на каждое правило, XML-doc
+- [x] `.claude/rules/client.md` (`paths: client/src/**`): `<script setup lang="ts">`, клиент не вычисляет правила, подсветка «цвет + значок»
+- [x] Код для проверки: `Hex` в движке, `client/src/game/hex.ts`
 - [ ] Эксперимент: одна и та же задача в движке и в клиенте, сравнение поведения и вывода `/memory`, скриншот
 
 ### Шаг 5. Skills
 
-- [ ] `engine-test`: агент вызывает сам, пишет xUnit-тесты к правилу движка и прогоняет их
-- [ ] `/verify`: запуск вручную (`disable-model-invocation: true`), сборка, линтеры, все тесты, отчёт и сообщение коммита
-- [ ] `/handoff`: запуск вручную, обновляет `progress.md` и отмечает пункты в `plan.md`
+- [x] `engine-test`: агент вызывает сам, пишет xUnit-тесты к правилу движка и прогоняет их
+- [x] `/verify`: запуск вручную (`disable-model-invocation: true`), сборка, линтеры, все тесты, отчёт и сообщение коммита
+- [x] `/handoff`: запуск вручную, обновляет `progress.md` и отмечает пункты в `plan.md`
 
 ### Шаг 6. Права доступа
 
-- [ ] `.claude/settings.json`, allow: `dotnet build|test|format`, `npm run lint|type-check|test:unit|test:e2e|build`, `npx vitest`, `npx playwright test`, `git status|diff|log|add`
-- [ ] ask: `git push`, `git commit`, `npm install`, `docker compose`, `git checkout -b`, `git switch -c`, `git merge`
-- [ ] deny: `Read(./.env)`, `Read(./.env.*)`, `Bash(cat .env*)`, `Bash(rm -rf:*)`, `Bash(git reset --hard:*)`, `Bash(git push --force:*)`, `Bash(git push origin main:*)`
-- [ ] `defaultMode: acceptEdits`, обоснование одной строкой в README
-- [ ] Личные настройки только в `.claude/settings.local.json` (в `.gitignore`)
+- [x] `.claude/settings.json`, allow: `dotnet build|test|format`, `npm run lint|type-check|test:unit|test:e2e|build`, `npx vitest`, `npx playwright test`, `git status|diff|log|add`
+- [x] ask: `git push`, `git commit`, `npm install`, `docker compose`, `git checkout -b`, `git switch -c`, `git merge`
+- [x] deny: `Read(./.env)`, `Read(./.env.*)`, `Bash(cat .env*)`, `Bash(rm -rf *)`, `Bash(git reset --hard *)`, `Bash(git push --force *)`, `Bash(git push origin main *)`, `Edit(**/package-lock.json)`
+- [x] `defaultMode: acceptEdits`
+- [ ] Обоснование режима одной строкой в README (шаг 10)
+- [x] Личные настройки только в `.claude/settings.local.json` (в `.gitignore`)
 
 ### Шаг 7. Hooks
 
-- [ ] `PreToolUse` на `Edit|Write|MultiEdit|Bash` → `.claude/hooks/protect-files.sh`: блокирует `.env*`, `.git/`, lock-файлы, выход с кодом 2
-- [ ] `PostToolUse` на `Edit|Write|MultiEdit` → `.claude/hooks/lint.sh`: `dotnet format --include` для `*.cs`, `eslint --fix` и `prettier` для `*.ts` и `*.vue`; при оставшихся ошибках выход с кодом 2
-- [ ] Проверка: просьба изменить `.env` (блокировка, скриншот), исправление файла с ошибкой форматирования (линтер, скриншот)
+- [x] `PreToolUse` на `Read|Edit|Write|MultiEdit|NotebookEdit|Bash` → `.claude/hooks/protect-files.sh`: блокирует `.env*`, `.git/`, lock-файлы, выход с кодом 2
+- [x] `PostToolUse` на `Edit|Write|MultiEdit` → `.claude/hooks/lint.sh`: `dotnet format --include` для `*.cs`, `prettier` и `eslint --fix` для `*.ts` и `*.vue`, поиск длинного тире; при оставшихся ошибках выход с кодом 2
+- [x] Проверка агентом: 13 случаев защиты через pipe-тест, в живой сессии заблокирован `grep … .env`, Prettier исправил испорченный `hex.ts`
+- [ ] Скриншот: владелец создаёт `.env` и просит агента изменить его (блокировка)
+- [ ] Скриншот: владелец портит форматирование файла и просит агента исправить (срабатывание линтера)
 
 ### Шаг 8. Проверка в браузере
 
