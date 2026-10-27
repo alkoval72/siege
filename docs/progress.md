@@ -71,3 +71,75 @@
 - **Дальше:** опционально эксперимент шага 4 (правила по путям, `/memory`, скриншот) и hook `SessionStart` шага 3; после коммита ДЗ переход к этапу M0-M1
 - **Ловушки:** `docs/screenshots/playwright.png` (зелёный `test:e2e`), на который ссылается шаг 8 в `plan.md`, по-прежнему нет, есть только `playwright.png.png` со скриншотом MCP-сессии; при обновлении `settings.json` нужно синхронизировать таблицу прав в README; скриншоты и `.mcp.json` не добавлены в git
 - **Коммит:** не закоммичено
+
+## 2026-10-17, Claude Code: тесты к `Hex` (skill `engine-test`)
+
+- **Сделано:** `server/Siege.Engine.Tests/HexTests.cs` дополнен по `architecture.md` §4.1 и `spec.md` §5.5: `Center` в `(0, 0)`; порядок `Directions` как в §4.1, противоположные направления через 3 индекса; `DistanceFromCenter` для отрицательных координат, на радиусе 10 и за ним; число клеток в радиусе R равно `3R(R+1)+1` (1, 7, 331); `Neighbors` в порядке `Directions`, соседство симметрично, у клетки на краю есть соседи за радиусом (угол 3, сторона 2). Было 3 метода (7 прогонов), стало 10 методов (29 прогонов); `dotnet test` и `dotnet format --verify-no-changes` зелёные
+- **Решения:** код движка не менялся, тесты фиксируют существующее поведение, поэтому проходят сразу; радиус 10 в тесте края задан константой теста, потому что `GameOptions` ещё нет
+- **Дальше:** M1: `GameOptions` с радиусом и проверка «клетка на поле», затем модель (`Team`, `PieceType`, `Piece`, `Move`, `GameState`) и выставление; тест края поля перевести на `GameOptions`
+- **Ловушки:** пункт шага 1 в `plan.md` упоминает «7 тестов»: это состояние каркаса, пункт не переписывался
+- **Коммит:** не закоммичено
+
+## 2026-10-27, Claude Code: план ДЗ модуля 2
+
+- **Сделано:** задание модуля 2 сверено с `plan.md` и репозиторием; в `plan.md` добавлен раздел §2 «ДЗ OTUS, модуль 2» (шаги 0-6), этапы игры стали §3; пункт про `spec.md` §11 отмечен выполненным (текст уже был в §11), hook `SessionStart` из §1 перенесён в §2, шаг 3
+- **Решения:** уже сделанное в модуле 1 (handoff-память, skills, hooks) не повторяется, а описывается в README как результат модуля 2; файлы GSD предлагается держать в `.planning/`, а `plan.md` и `progress.md` оставить handoff-файлами (ждёт подтверждения владельца)
+- **Дальше:** §2, шаг 1: уточнить пакет GSD и согласовать установку
+- **Ловушки:** GSD не установлен, точное имя пакета (`gsd-core` или `get-shit-done-cc`) не проверено; GSD ведёт свой план и состояние, без решения об источнике истины появятся два расходящихся плана
+- **Коммит:** не закоммичено
+
+## 2026-10-27, Claude Code: решения по GSD для ДЗ модуля 2
+
+- **Сделано:** изучены README, `docs/COMMANDS.md` и туториал онбординга `open-gsd/gsd-core`; в `plan.md` §2 шаги 1-5 переписаны под решения владельца: установка, переход памяти на GSD, hooks на `STATE.md`, Discovery через `/gsd-onboard`, `/gsd-map-codebase`, `/gsd-ingest-docs`, `/gsd-new-project`, `/gsd-discuss-phase 1`
+- **Решения:** владелец выбрал: пакет `@opengsd/gsd-core`, локальная установка в `.claude/` с файлами в git; GSD становится источником истины для плана и состояния, `plan.md` и `progress.md` замораживаются после сдачи модуля 2; автокоммиты GSD отключаются; Discovery доводится до обсуждения фазы M1
+- **Дальше:** §2, шаг 1: установка `npx @opengsd/gsd-core@latest` (ставит владелец или агент с подтверждением), сравнение `settings.json` до и после
+- **Ловушки:** `STATE.md` появляется только после `/gsd-new-project` (шаг 5), поэтому переход памяти (шаг 2) и hook `SessionStart` (шаг 3) делать после Discovery; ключ отключения автокоммитов в `config.json` не проверен; шаблоны GSD на английском и могут содержать длинное тире, `lint.sh` будет блокировать запись таких `.md` агентами GSD; правило `markdown.md` требует русский текст, для `.planning/` нужно решить, действует ли оно
+- **Коммит:** не закоммичено
+
+## 2026-10-27, Claude Code: установка GSD
+
+- **Сделано:** `npx @opengsd/gsd-core@latest --claude --local`, GSD Core v1.19.0: 72 команды `/gsd-*` в `.claude/commands/`, 35 агентов в `.claude/agents/`, ядро в `.claude/gsd-core/` (около 15 МБ), скрипты `gsd-*` в `.claude/hooks/`, служебные файлы `gsd-file-manifest.json`, `gsd-install-state.json`, `.gsd-profile`; всего в `.claude/` 855 файлов, 17 МБ. `settings.json` и наши файлы в `.claude/` не изменились (сравнение со снимком до установки и `git diff`)
+- **Решения:** флаги `--claude --local` вместо интерактивных вопросов установщика; `statusLine` установщик для локальной установки не ставил (нужен `--force-statusline`)
+- **Дальше:** решить, где хранить hooks GSD; перезапустить Claude Code и проверить `/gsd-*`; отключить автокоммиты, когда появится `.planning/config.json`
+- **Ловушки:** hooks GSD (`SessionStart`, `PreToolUse`, `PostToolUse`, `SubagentStop`, `Stop`, `PreCompact`, `FileChanged`) и права `Read/Edit(.planning/*)` записаны в `.claude/settings.local.json`, который в `.gitignore`: после клонирования GSD без hooks; в командах hooks абсолютный путь `/snap/node/12181/bin/node` с запасным `command -v node`; `gsd-secret-read-guard.js` частично дублирует `protect-files.sh`; `gsd-validate-commit.sh` и `gsd-session-state.sh` включаются через конфиг
+- **Коммит:** не закоммичено
+
+## 2026-10-27, Claude Code: hooks GSD в `settings.json`
+
+- **Сделано:** по решению владельца из `.claude/settings.local.json` в `.claude/settings.json` перенесены hooks GSD (`PreToolUse` 8, `PostToolUse` 4, `SessionStart` 3, `SubagentStop`, `Stop`, `PreCompact`, `FileChanged`), права `Read/Edit(.planning/*)`, `Read/Edit(STATE.md)` и `worktree.baseRef: "head"`; наши `protect-files.sh` и `lint.sh` стоят первыми в своих событиях, порядок `allow` сохранён; `settings.local.json` теперь `{}`; JSON проверен `jq`, `gsd-secret-read-guard.js` через перенесённую команду пропускает `README.md` и блокирует `server/.secrets`; снимки до правок лежат в scratchpad сессии
+- **Решения:** из поиска `node` в командах hooks убран путь `/snap/node/12181/bin/node`, остался `command -v node` и системные пути: команда работает на любой машине с `node` в `PATH`
+- **Дальше:** перезапуск Claude Code, проверка hooks GSD в живой сессии; затем `security-checklist.md` и Discovery (`/gsd-onboard`)
+- **Ловушки:** `/gsd-update` и повторный запуск установщика могут снова записать hooks в `settings.local.json`, получатся дубли: после обновления сверять оба файла; hooks GSD грузятся только при старте сессии; `gsd-secret-read-guard.js` разрешает шаблоны вида `.env.example`, а наш `protect-files.sh` блокирует все такие файлы, действует более строгое правило; таблицу hooks в README нужно дополнить
+- **Коммит:** не закоммичено
+
+## 2026-10-27, Claude Code: разбор `/gsd-new-project` и `STATE.md`
+
+- **Сделано:** по исходникам `.claude/gsd-core/` (`workflows/new-project.md`, `templates/state.md`, `bin/lib/commands.cjs`, `bin/lib/profile-output.cjs`) разобраны шаги `/gsd-new-project` и жизненный цикл `STATE.md`; в `plan.md` §2 добавлены решение владельца и пункты про `commit_docs` и согласование двух `CLAUDE.md`
+- **Решения:** владелец выбрал оставить сгенерированный `.claude/CLAUDE.md` как есть и работать только через команды GSD
+- **Дальше:** проверить, можно ли создать `.planning/config.json` с `commit_docs: false` до `/gsd-new-project`; затем `/gsd-onboard` → `/gsd-map-codebase` → `/gsd-ingest-docs` → `/gsd-new-project` без исследования, с фазами M0-M7 и ответами на русском
+- **Ловушки:** `commit_docs` по умолчанию `true`, а `PROJECT.md` коммитится до вопроса о настройках; git вызывается внутри `gsd_run`, поэтому правило `ask` на `Bash(git commit *)` его не ловит, защищает только запрос на запуск самой команды; `STATE.md` обновляют только команды GSD, при прямых правках он отстаёт; корневой `CLAUDE.md` пока требует другой порядок работы, до согласования агент получает противоречащие инструкции
+- **Коммит:** не закоммичено
+
+## 2026-10-27, Claude Code: `config.json` GSD до инициализации
+
+- **Сделано:** через `node .claude/gsd-core/bin/gsd-tools.cjs config-set` создан `.planning/config.json` с `commit_docs: false` и `response_language: "Russian"`; по коду `onboard-projection.cjs` один `config.json` не считается артефактом планирования, поэтому `/gsd-onboard` не уйдёт в ветку `partial-planning`
+- **Решения:** порядок Discovery: `/gsd-onboard` после каждого шага сам называет следующую команду (`/gsd-map-codebase`, затем `/gsd-ingest-docs --mode new`); `/gsd-new-project` запускается, только если его предложит `/gsd-onboard`, потому что `/gsd-ingest-docs` в режиме `new` сам может создать `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, `STATE.md`
+- **Дальше:** новый чат, `/hooks`, `/gsd-onboard`
+- **Ловушки:** у GSD `commit_docs: false` значит «`.planning/` не в git»: на вопрос «Commit planning docs to git?» отвечать «No», затем убрать строку `.planning/` из `.gitignore`, если GSD её добавит; `.planning/` уже существует, поэтому `/gsd-ingest-docs` без флага выберет режим `merge`, нужен `--mode new` и подтверждение предупреждения; в `jq` `false // x` даёт `x`, проверять значения через `config-get`
+- **Коммит:** не закоммичено
+
+## 2026-10-27, Claude Code: Discovery в GSD и обсуждение M1
+
+- **Сделано:** `/gsd-map-codebase` (7 документов в `.planning/codebase/`), `/gsd-ingest-docs docs --mode new` (`INGEST-CONFLICTS.md`: 0 блокеров, 7 предупреждений; `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md` с 8 фазами, `STATE.md`), `/gsd-discuss-phase 2` для M1 (`02-CONTEXT.md`, `02-DISCUSSION-LOG.md`); решения перенесены в `spec.md` (v0.3, §5.2, §5.4, §10, журнал §12) и `architecture.md` (§4.2, §4.4, §4.5, §9, §10, журнал §11, §12 п.2 и п.3 закрыты, ссылка «раздел 11» исправлена); блокеры OQ-3, OQ-4, OQ-6 сняты в `STATE.md`, `REQ-pass-turn` заменён на `REQ-no-moves-loss`; длинных тире в изменённых файлах нет
+- **Решения:** владелец: пропуска хода нет, игрок без допустимых ходов проигрывает, окружение королей проверяется раньше (`PassMove` удалён из модели и JSON); условие выставления как в `spec.md` («хотя бы одна своя»), стопка по верхней фишке, только в пустую клетку, король разрешён первым ходом, все 6 клеток для первой фишки второго игрока; при ingest расхождения `spec.md` и `architecture.md` не решались по приоритету типов, а выносились владельцу; циклы ссылок между документами приняты как неблокирующие
+- **Дальше:** `/gsd-discuss-phase 3` (OQ-1 `Scout`, OQ-2 формула высот `Climber`), OQ-5 (статус партии) к Phase 5; `/gsd-health`; скриншоты Discovery; по объёму ДЗ `/gsd-plan-phase` не запускается
+- **Ловушки:** нумерация GSD сдвинута: Phase N = M(N-1), M1 это Phase 2; ID требований `REQ-slug` не совпадают с шаблоном `CAT-NN` части инструментов GSD (по словам роадмаппера, отметку выполнения, возможно, придётся делать вручную); классификаторы `gsd-doc-classifier` не умеют SHA-256, имена файлов классификаций переименовал оркестратор; `state.record-session` обновляет только раздел «Session Continuity»; `INGEST-CONFLICTS.md` и `intel/` описывают состояние до решений M1; чекбокс M0 в §3 не отмечен
+- **Коммит:** не закоммичено
+
+## 2026-10-27, Claude Code: обсуждение M2 (`/gsd-discuss-phase 3`)
+
+- **Сделано:** `03-CONTEXT.md` и `03-DISCUSSION-LOG.md` в `.planning/phases/03-m2-dvizhenie-fishek-edinstvo-gruppy-skolzhenie/`; решения перенесены в `spec.md` (v0.4, §5, §5.1, §5.3, журнал §12) и `architecture.md` (§4.4, журнал §11, §12 закрыт целиком, риск в §13); в `REQUIREMENTS.md` варианты `Scout` сведены в `REQ-move-scout` (34 требования), пометки OQ-2 сняты; `ROADMAP.md`, `STATE.md`, `PROJECT.md` отмечают OQ-1 и OQ-2 закрытыми; длинных тире в изменённых файлах нет
+- **Решения:** владелец: путь `Scout` из 4 различных клеток, исходная считается пройденной; `Climber` не проходит при `min(h1, h2) > max(hA, hB)`, по земле ходит как `Sovereign`; шаг по земле допустим, если из двух общих клеток занята ровно одна (нет протискивания и перескока через пустоту); первоисточник правил это `spec.md`; позиции в тестах задаёт билдер в коде, случайные партии: около 200 с фиксированными seed в обычном `dotnet test`
+- **Дальше:** реализация Phase 2 (M1) до планирования Phase 3; OQ-5 (статус партии) к Phase 5; `/gsd-health`
+- **Ловушки:** Phase 3 опирается на типы Phase 2, которых в коде ещё нет; `INGEST-CONFLICTS.md` и `intel/` описывают состояние до решений M1 и M2; формулировка «ровно одна общая занята» строже прежней версии spec, тест на перескок через пустоту обязателен
+- **Коммит:** не закоммичено

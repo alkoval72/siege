@@ -8,9 +8,9 @@ Siege это браузерная сетевая стратегия для дв�
 
 Перед работой с правилами и контрактами читай:
 - `docs/spec.md`: правила игры. Для движка это источник истины.
-- `docs/architecture.md`: компоненты, контракты REST и SignalR, схема БД, алгоритмы движка.
+- `.planning/ARCHITECTURE-TARGET.md`: целевая архитектура (компоненты, контракты REST и SignalR, схема БД, алгоритмы движка).
 
-Если код, `spec.md` и `architecture.md` расходятся, остановись и спроси. Молча не выбирай.
+Если код, `spec.md` и `ARCHITECTURE-TARGET.md` расходятся, остановись и спроси. Молча не выбирай.
 
 ## Команды
 
@@ -77,7 +77,7 @@ Siege это браузерная сетевая стратегия для дв�
 **TypeScript / Vue (`client/`):**
 - Компоненты `PascalCase.vue`, модули `camelCase.ts`, unit-тесты лежат в `__tests__/` рядом с модулем (`src/game/__tests__/hex.spec.ts`), e2e-тесты лежат в `client/e2e/*.spec.ts`.
 
-**Где что лежит** (целевая структура из `architecture.md` §3, папки создаются по мере работы):
+**Где что лежит** (целевая структура из `.planning/ARCHITECTURE-TARGET.md` §3, папки создаются по мере работы):
 ```
 server/Siege.Engine/        правила игры (чистая библиотека)
 server/Siege.Engine.Tests/  тесты движка
@@ -88,7 +88,8 @@ client/src/stores/          Pinia (gameStore)
 client/src/components/      BoardView, HexCell, PieceToken, ReservePanel, StatusBar
 client/src/views/           HomeView, GameView
 client/src/themes/medieval/ theme.json и SVG фишек
-docs/                       spec, architecture, plan, progress
+docs/                       spec, plan, progress
+.planning/                  GSD: roadmap, состояние, фазы, ARCHITECTURE-TARGET.md
 ```
 
 ## Правила работы

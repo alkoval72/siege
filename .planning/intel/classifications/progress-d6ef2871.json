@@ -1,0 +1,13 @@
+{
+  "source_path": "/home/alexander/Projects/alliance/siege/docs/progress.md",
+  "type": "DOC",
+  "confidence": "medium",
+  "manifest_override": false,
+  "title": "Журнал работ: Siege",
+  "summary": "Append-only журнал прогресса для передачи работы между сессиями и агентами: записи по задачам с полями «Сделано», «Решения», «Дальше», «Ловушки», «Коммит».",
+  "scope": ["Siege", "docs/plan.md", "GSD", "Hex", "hooks", "Playwright MCP", "settings.json", "STATE.md"],
+  "cross_refs": ["docs/plan.md", "docs/spec.md", "docs/architecture.md", "CLAUDE.md", "README.md", ".claude/rules/markdown.md", ".claude/rules/engine.md", ".claude/rules/client.md", "server/Siege.Engine.Tests/HexTests.cs", ".mcp.json", ".planning/config.json"],
+  "locked": false,
+  "precedence": null,
+  "notes": "Журнал передачи работы, а не документ с решениями. Заголовки записей содержат дату, агента и задачу; поле «Решения» описывает уже принятые решения, но это история, а не источник требований или ADR, поэтому тип DOC с низким весом. Признаков ADR (Status, Context/Decision/Consequences) и PRD (user stories, acceptance criteria) нет. Сигналы неоднозначны из-за полей «Решения», поэтому уверенность средняя. Хеш имени файла не вычислен: в доступных инструментах нет способа посчитать SHA-256, имя файла использует временный суффикс nohash, поле source_path указывает на исходный файл."
+}

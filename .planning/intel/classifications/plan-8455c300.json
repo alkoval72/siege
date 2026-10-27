@@ -1,0 +1,13 @@
+{
+  "source_path": "/home/alexander/Projects/alliance/siege/docs/plan.md",
+  "type": "DOC",
+  "confidence": "medium",
+  "manifest_override": false,
+  "title": "План работ: Siege",
+  "summary": "Handoff-план работ Siege: чекбоксы по ДЗ модулей 1-2 и этапам M0-M7; после перехода на GSD источником истины становится .planning/.",
+  "scope": ["план работ", "ДЗ OTUS модуль 1", "ДЗ OTUS модуль 2", "GSD", "этапы M0-M7", "Siege"],
+  "cross_refs": ["docs/progress.md", "docs/architecture.md", "architecture.md §10", "architecture.md §11", "architecture.md §12", "spec.md §11", "spec.md §13", ".planning/ROADMAP.md", ".planning/STATE.md", "docs/security-checklist.md", "CLAUDE.md", "README.md", ".claude/rules/markdown.md", "docs/screenshots/"],
+  "locked": false,
+  "precedence": null,
+  "notes": "Нет сигналов ADR, PRD или SPEC. Содержимое: рабочий план с чекбоксами и handoff-статусом. Тип DOC выбран как ближайший из таксономии. Документ сам отмечает, что после инициализации GSD источником истины становится .planning/. Файл записан оркестратором по отчёту классификатора (у классификатора нет инструмента SHA-256)."
+}

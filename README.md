@@ -5,7 +5,7 @@
 Документация:
 
 - [spec.md](docs/spec.md): правила игры;
-- [architecture.md](docs/architecture.md): компоненты, контракты, схема БД, алгоритмы движка;
+- [ARCHITECTURE-TARGET.md](.planning/ARCHITECTURE-TARGET.md): целевая архитектура (компоненты, контракты, схема БД, алгоритмы движка);
 - [plan.md](docs/plan.md) и [progress.md](docs/progress.md): план работ и журнал прогресса.
 
 ## Как агент работает в проекте
@@ -20,9 +20,9 @@
 | `.claude/rules/engine.md` | при работе с `server/Siege.Engine/**` и тестами движка | чистота и неизменяемость движка, тест на каждое правило, XML-doc |
 | `.claude/rules/client.md` | при работе с `client/src/**` | `<script setup lang="ts">`, клиент не вычисляет правила, подсветка «цвет + значок» |
 | `.claude/rules/markdown.md` | при работе с `**/*.md` | оформление документации |
-| `docs/spec.md`, `docs/architecture.md` | перед работой с правилами и контрактами | источник истины для движка и API |
+| `docs/spec.md`, `.planning/ARCHITECTURE-TARGET.md` | перед работой с правилами и контрактами | источник истины для движка и API |
 
-Если код, `spec.md` и `architecture.md` расходятся, агент останавливается и спрашивает владельца.
+Если код, `spec.md` и `ARCHITECTURE-TARGET.md` расходятся, агент останавливается и спрашивает владельца.
 
 ### Память между сессиями
 

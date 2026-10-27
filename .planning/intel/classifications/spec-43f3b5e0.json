@@ -1,0 +1,13 @@
+{
+  "source_path": "/home/alexander/Projects/alliance/siege/docs/spec.md",
+  "type": "PRD",
+  "confidence": "medium",
+  "manifest_override": false,
+  "title": "Спецификация: стратегическая игра для двух игроков (кодовое имя: Siege)",
+  "summary": "Product and rules spec for Siege, a two-player browser hex strategy game: goals, MVP scope, out-of-scope items, and user scenarios.",
+  "scope": ["Siege", "hex board", "Hive-like game mechanics", "game pieces", "hot-seat local mode", "online two-player mode", "invitation link rooms", "anonymous login", "game storage (move list)"],
+  "cross_refs": [],
+  "locked": false,
+  "precedence": null,
+  "notes": "Filename is spec.md, which is not a SPEC-*.md or spec/ path, so the heuristic is weak. Content shows PRD hallmarks: goals (section 1), MVP in/out scope (section 2), user scenarios (section 3). No endpoint tables, schemas, or protocol definitions appear in the first 50 lines, so SPEC is not chosen. CLAUDE.md names this file as the game rules source of truth; rules sections beyond line 50 were not read. Output filename uses the placeholder suffix HASH_PENDING because this agent has no hashing tool; the orchestrator must rename it to spec-<first 8 hex of SHA-256 of the source path>.json."
+}

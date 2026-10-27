@@ -1,0 +1,13 @@
+{
+  "source_path": "/home/alexander/Projects/alliance/siege/docs/architecture.md",
+  "type": "SPEC",
+  "confidence": "medium",
+  "manifest_override": false,
+  "title": "Архитектура: Siege",
+  "summary": "Технический контракт Siege: движок правил, REST и SignalR контракты, схема PostgreSQL, структура клиента и журнал решений.",
+  "scope": ["Siege.Engine", "Siege.Server", "GameHub (SignalR)", "REST API", "PostgreSQL schema", "GameState", "Vue 3 клиент", "тема medieval", "журнал решений"],
+  "cross_refs": ["spec.md", "plan.md", "progress.md", "about.md", "CLAUDE.md"],
+  "locked": false,
+  "precedence": null,
+  "notes": "Нет имени файла и frontmatter с типом или статусом. Сильные SPEC-сигналы: таблица REST-эндпоинтов, JSON-схема GameState, SQL-схема таблиц, алгоритмы движка. ADR-сигнал слабый: раздел 11 «Журнал решений» содержит несколько решений, а не одно, поэтому документ не ADR. PRD-сигналов (user stories, acceptance criteria) нет. Имя выходного файла содержит суффикс nohash: SHA-256 не был вычислен, так как доступных инструментов для хеширования нет. Переименовать в architecture-<8 hex SHA-256 от полного пути>.json."
+}

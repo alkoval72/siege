@@ -1,17 +1,17 @@
 # План работ: Siege
 
-Обновлено: 2026-10-17.
+Обновлено: 2026-10-27.
 
 Это handoff-файл. Выполненное отмечается `[x]`, подробности решений и ловушек записываются в `docs/progress.md`. Вся работа ведётся в ветке `develop`.
 
-## 1. ДЗ OTUS: AI-ориентированная среда разработки
+## 1. ДЗ OTUS, модуль 1: AI-ориентированная среда разработки
 
 ### Шаг 0. Подготовка
 
 - [x] Ветка `develop`, `docs/spec.md` и `docs/architecture.md` в git
 - [x] Стек зафиксирован: .NET 8 + xUnit + `dotnet format`; Vue 3 + TS + Vite + Pinia, npm, ESLint + Oxlint + Prettier, Vitest, Playwright
 - [x] Агент: Claude Code, инструкции в `CLAUDE.md` (без `AGENTS.md`)
-- [ ] Обновить `spec.md` §11: вся разработка в `develop`, `main` для стабильных состояний
+- [x] Обновить `spec.md` §11: вся разработка в `develop`, `main` для стабильных состояний (на 2026-10-27 уже записано в §11)
 
 ### Шаг 1. Каркас проекта
 
@@ -34,7 +34,7 @@
 
 - [x] `docs/plan.md` с чекбоксами
 - [x] `docs/progress.md`: журнал «Сделано / Решения / Дальше / Ловушки / Коммит», первая запись; формат записи описан в `CLAUDE.md`
-- [ ] Hook `SessionStart`: подставляет в контекст незакрытые пункты `plan.md` и последнюю запись `progress.md` (опционально)
+- [ ] Hook `SessionStart`: подставляет в контекст незакрытые пункты `plan.md` и последнюю запись `progress.md` (опционально; перенесено в §2, шаг 3)
 
 ### Шаг 4. Правила по путям
 
@@ -81,9 +81,82 @@
 
 - [x] `README.md`, раздел «Как агент работает в проекте»: какие инструкции читает, права и режим по умолчанию, hooks, запуск тестов
 
-## 2. Этапы разработки игры
+## 2. ДЗ OTUS, модуль 2: агентно-ориентированный пайплайн
 
-Подробности в `architecture.md` §10.
+Цель: GSD поверх существующих документов, память, быстрые команды и hooks, управление контекстом, Discovery. Уже сделанное в §1 не повторяется, а описывается в README как результат модуля 2.
+
+### Шаг 0. Сверка с модулем 1
+
+- [x] Сверено 2026-10-27: `plan.md`, `progress.md`, `architecture.md` и этапы M0-M7 (`architecture.md` §10) уже есть; память (`plan.md` + `progress.md` + `/handoff`, авто-память Claude Code) показана в шаге 9; `/verify`, `/handoff`, `engine-test`, `protect-files.sh`, `lint.sh` уже работают
+- [x] Новое для модуля 2: GSD, roadmap, `security-checklist`, hooks `SessionStart` и `PreCompact`, управление контекстом со скриншотами, Discovery, раздел README
+
+### Шаг 1. GSD и инициализация проекта
+
+Решения владельца от 2026-10-27:
+
+- пакет `@opengsd/gsd-core` (https://github.com/open-gsd/gsd-core), установка локально в `.claude/` проекта, файлы GSD в git;
+- после инициализации GSD становится источником истины для плана и состояния: `.planning/` (`PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, `STATE.md`, `phases/`); `docs/plan.md` и `docs/progress.md` замораживаются после сдачи ДЗ модуля 2;
+- GSD сам не коммитит, коммиты делает владелец, `git commit` остаётся в `ask`;
+- `.claude/CLAUDE.md`, который генерирует `/gsd-new-project`, остаётся как есть: любые правки в репозитории идут только через команды GSD (`/gsd-fast`, `/gsd-quick`, `/gsd-debug`, `/gsd-execute-phase`), иначе `STATE.md` расходится с проектом.
+
+Задачи:
+
+- [x] Установка: `npx @opengsd/gsd-core@latest --claude --local` (v1.19.0): 72 команды в `.claude/commands/`, 35 агентов в `.claude/agents/`, ядро в `.claude/gsd-core/`, hooks `gsd-*` в `.claude/hooks/`
+- [x] Команды `/gsd-*` видны в сессии Claude Code
+- [x] Сравнить `.claude/settings.json` до и после установки: не изменился, наши `protect-files.sh` и `lint.sh` на месте; hooks GSD и права на `.planning/*` записаны в `.claude/settings.local.json` (в `.gitignore`)
+- [x] Решение владельца: hooks, права и `worktree.baseRef` GSD перенесены в `settings.json` после наших hooks, путь `/snap/node/...` убран из поиска `node`; `settings.local.json` пустой; hook `gsd-secret-read-guard.js` проверен pipe-тестом
+- [ ] Перезапустить Claude Code и проверить hooks GSD в живой сессии
+- [ ] Отключить автокоммиты GSD: ключ `commit_docs: false` в `.planning/config.json` (по умолчанию `true`, при `false` команда `gsd_run query commit` пропускает коммит). `/gsd-new-project` коммитит `PROJECT.md` до вопроса о настройках, поэтому `config.json` нужен заранее: проверить, что заранее созданный файл не ломает инициализацию; до этого отклонять запросы на запуск `gsd_run query commit`
+- [ ] `.gitignore`: в git попадают `.claude/commands/`, `.claude/agents/`, `.planning/`; временные файлы GSD (если есть) исключить
+- [ ] Записать решение «план и состояние ведёт GSD» в журнал `.planning/ARCHITECTURE-TARGET.md` §11; `ARCHITECTURE-TARGET.md` §10 ссылается на `.planning/ROADMAP.md`
+- [ ] `docs/security-checklist.md`: секреты и `.env` (deny + `protect-files.sh`), права агента и MCP, новые зависимости только по согласованию, проверка ходов на сервере через `GetLegalMoves`, токен игрока (хеш в БД), входные данные REST и SignalR, CORS, данные из внешних источников (prompt injection); выяснить, как он соотносится с `SECURITY.md` и `/gsd-secure-phase` из GSD
+- [ ] Ссылки на `.planning/` и `security-checklist.md` в `CLAUDE.md` и `README.md`; `CLAUDE.md` не длиннее 200 строк
+
+### Шаг 2. Память агента и переход на GSD
+
+- [ ] Переписать раздел «Память между сессиями» в `CLAUDE.md`: в начале сессии `/gsd-resume-work` или `/gsd-progress` (чтение `STATE.md`), в конце `/gsd-pause-work`; `plan.md` и `progress.md` упоминаются как архив модулей 1-2
+- [ ] Согласовать корневой `CLAUDE.md` с `.claude/CLAUDE.md` от GSD: раздел «Порядок работы» (план через `/gsd-discuss-phase` и `/gsd-plan-phase`, правки через команды GSD), дубли стека и конвенций убрать из одного из файлов; решение записать в журнал `.planning/ARCHITECTURE-TARGET.md` §11
+- [ ] Skill `/handoff`: удалить или переделать в обёртку над `/gsd-pause-work` (решить при переходе, согласовать с владельцем)
+- [ ] `.claude/rules/markdown.md`, раздел «Документы проекта»: правила для `.planning/` вместо `plan.md` и `progress.md`
+- [ ] В README описать память: `STATE.md` и артефакты фаз GSD в git, авто-память Claude Code (`MEMORY.md`), архив `plan.md` и `progress.md`; MemPalace (`/gsd-mempalace-*`) и Claude Mem не подключаем без отдельного согласования
+- [ ] Заморозить `plan.md` и `progress.md`: последняя запись в `progress.md` и строка в начале `plan.md` со ссылкой на `.planning/`
+
+### Шаг 3. Быстрые команды и auto hooks
+
+- [ ] Hook `SessionStart`: подставляет в контекст текущую фазу и следующий шаг из `.planning/STATE.md` и `git log --oneline -5`
+- [ ] Hook `PreCompact`: перед сжатием контекста напоминает агенту сохранить чек-пойнт (`/gsd-pause-work`) или пишет служебную отметку
+- [ ] Проверка hooks агентом: pipe-тест скриптов и живая сессия
+- [ ] Таблица быстрых команд в README: `/verify`, основные `/gsd-*` (`onboard`, `progress`, `next`, `discuss-phase`, `plan-phase`, `pause-work`, `resume-work`, `health`), встроенные `/context`, `/compact`, `/rewind`, `/usage`
+
+### Шаг 4. Управление контекстом
+
+- [ ] Инструмент: автосжатие Claude Code + `/compact` с указанием, что сохранить; чек-пойнты через `/rewind` и `/gsd-pause-work`; субагенты GSD с чистым контекстом; проверка заполнения `/gsd-health --context`; опционально строка состояния с процентом заполнения контекста (`statusLine`)
+- [ ] Скриншот «до»: `/context` и `/usage` в длинной сессии (`docs/screenshots/usage-before.png`)
+- [ ] Сжатие контекста (`/compact` или `PreCompact` + автосжатие), продолжение работы без потери задачи
+- [ ] Скриншот «после»: `/context` и `/usage` (`docs/screenshots/usage-after.png`)
+- [ ] Короткое правило в `CLAUDE.md`: когда сжимать, что сохранять перед сжатием
+
+### Шаг 5. Discovery в GSD
+
+Объём по решению владельца: до обсуждения фазы M1, без `/gsd-plan-phase` и выполнения.
+
+- [x] `/gsd-onboard`, затем `/gsd-map-codebase`: `.planning/codebase/` (`STACK.md`, `ARCHITECTURE.md`, `CONVENTIONS.md`, `TESTING.md`, `CONCERNS.md` и др.)
+- [x] `/gsd-ingest-docs` для `spec.md` и `architecture.md`; разобрать `INGEST-CONFLICTS.md` с владельцем
+- [x] `/gsd-new-project`: `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md` с этапами M0-M7 (из `architecture.md` §10 и `spec.md` §13), `STATE.md`; roadmap утверждает владелец (создано через `/gsd-ingest-docs docs --mode new`, отдельный `/gsd-new-project` не понадобился; утверждение roadmap владельцем не зафиксировано)
+- [x] `/gsd-discuss-phase 1` для M1 (поле, выставление, правило короля): решения в `CONTEXT.md` фазы, открытые вопросы из `architecture.md` §12 (в GSD это Phase 2: `/gsd-discuss-phase 2`, `.planning/phases/02-m1-dvizhok-pole-vystavlenie-pravilo-korolya/02-CONTEXT.md`)
+- [x] `/gsd-discuss-phase 3` для M2 (сверх объёма ДЗ): OQ-1 и OQ-2 закрыты, `.planning/phases/03-m2-dvizhenie-fishek-edinstvo-gruppy-skolzhenie/03-CONTEXT.md`, `spec.md` v0.4, `architecture.md` §12 закрыт
+- [ ] Расхождения с `spec.md` и `ARCHITECTURE-TARGET.md` вынесены владельцу, а не решены молча; `/gsd-health` без ошибок
+- [ ] Скриншоты сессии Discovery (`docs/screenshots/discovery-*.png`)
+
+### Шаг 6. Отчёт и сдача
+
+- [ ] `README.md`, раздел «Результаты модуля 2»: GSD и созданные файлы, roadmap, `security-checklist`, память, команды и hooks, управление контекстом со скриншотами, Discovery
+- [ ] Ловушки модуля 1 закрыты: e2e-скриншот `docs/screenshots/playwright.png` переснят, `playwright.png.png` переименован, скриншоты и `.mcp.json` добавлены в git
+- [ ] `/verify` зелёный, запись в `progress.md`, предложено сообщение коммита
+
+## 3. Этапы разработки игры
+
+Подробности в `architecture.md` §10. После шага 5 из §2 этапы ведутся в `.planning/ROADMAP.md`, список ниже не обновляется.
 
 - [ ] M0. Каркас репозитория, команды, `CLAUDE.md`, права, хук форматирования
 - [ ] M1. Движок: поле, выставление, правило короля
